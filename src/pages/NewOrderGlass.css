@@ -1,0 +1,35 @@
+/* Aproximación web de liquid glass para los paneles de la orden. */
+.new-order-page { position: relative; isolation: isolate; }
+.new-order-page::before { content: ''; position: absolute; z-index: -1; inset: 22px -70px -90px; pointer-events: none; background: radial-gradient(circle at 13% 24%, rgba(78,126,255,.38), transparent 29%), radial-gradient(circle at 82% 13%, rgba(181,144,255,.31), transparent 28%), radial-gradient(circle at 57% 78%, rgba(255,174,104,.29), transparent 31%); filter: blur(28px); }
+.new-order-page .order-section, .new-order-page .service-details { position: relative; isolation: isolate; background: linear-gradient(135deg, rgba(255,255,255,.44), rgba(255,255,255,.17) 48%, rgba(255,255,255,.29)); border: 1px solid rgba(255,255,255,.84); box-shadow: inset 0 1px 0 rgba(255,255,255,.92), inset 0 -1px 0 rgba(95,116,163,.12), 0 22px 42px rgba(72,61,47,.13); backdrop-filter: blur(30px) saturate(160%) contrast(1.05); -webkit-backdrop-filter: blur(30px) saturate(160%) contrast(1.05); }
+.new-order-page .service-details { overflow: visible; }
+.new-order-page .order-section::after, .new-order-page .service-details::after { content: ''; position: absolute; z-index: 0; inset: 1px; border-radius: inherit; pointer-events: none; background: linear-gradient(118deg, rgba(255,255,255,.58), transparent 32%, rgba(255,255,255,.12) 66%, rgba(255,255,255,.42)); }
+.new-order-page .order-section > *, .new-order-page .service-details > * { position: relative; z-index: 1; }
+.new-order-page .order-section>header { background: linear-gradient(100deg, rgba(255,255,255,.16), rgba(255,255,255,.05)); border-bottom-color: rgba(167,180,206,.32); }
+.new-order-page .service-details>header { background: linear-gradient(155deg, rgba(225,236,255,.33), rgba(255,255,255,.08)); border-right-color: rgba(167,180,206,.32); }
+.new-order-page .field input, .new-order-page .field select, .new-order-page .field textarea { background: rgba(255,255,255,.58); border-color: rgba(160,177,207,.55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.new-order-page .section-icon { overflow: visible; color: #fff; background: transparent; border: 0; box-shadow: none; }
+.new-order-page .section-icon.service { color: #fff; background: transparent; box-shadow: none; }
+.new-order-page .section-icon img { width: 30px; height: 30px; object-fit: contain; mix-blend-mode: normal; filter: saturate(1.28) contrast(1.16) brightness(1.13) drop-shadow(0 2px 3px rgba(6,31,95,.32)); transform: scale(1.55); }
+.new-order-page .section-icon.service img { transform: scale(1.42); }
+
+/* Los accesos visuales de cada paso toman protagonismo frente a los paneles. */
+.new-order-page .order-section > header { gap: 17px; }
+.new-order-page .section-icon { width: 62px; height: 62px; border-radius: 19px; }
+.new-order-page .section-icon img { width: 46px; height: 46px; transform: scale(1.34); }
+.new-order-page .section-icon.service img { transform: scale(1.26); }
+@media (max-width: 620px) { .new-order-page .section-icon { width: 54px; height: 54px; border-radius: 16px; } .new-order-page .section-icon img { width: 40px; height: 40px; } }
+
+/* Desplegable propio: el menú deja de depender del panel nativo del navegador. */
+.new-order-page .glass-select { position: relative; }
+.new-order-page .glass-select-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 41px; padding: 0 12px; border: 1px solid rgba(160,177,207,.62); border-radius: 9px; color: #1d2738; background: rgba(255,255,255,.52); box-shadow: inset 0 1px 0 rgba(255,255,255,.7); backdrop-filter: blur(14px) saturate(155%); -webkit-backdrop-filter: blur(14px) saturate(155%); cursor: pointer; font: inherit; font-size: 12px; text-align: left; transition: border-color .22s ease, box-shadow .22s ease, background .22s ease; }
+.new-order-page .glass-select-trigger:hover { background: rgba(255,255,255,.68); }
+.new-order-page .glass-select.is-open .glass-select-trigger { border-color: #2c61e9; box-shadow: 0 0 0 3px rgba(44,97,233,.12), inset 0 1px 0 rgba(255,255,255,.82); }
+.new-order-page .glass-select-trigger svg { color: #255ee5; transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+.new-order-page .glass-select.is-open .glass-select-trigger svg { transform: rotate(180deg); }
+.new-order-page .glass-select-menu { position: absolute; z-index: 50; top: calc(100% + 10px); right: 0; left: 0; display: grid; gap: 0; padding: 8px 12px; border: 1px solid rgba(255,255,255,.9); border-radius: 18px; background: linear-gradient(140deg, rgba(255,253,248,.74), rgba(244,237,226,.62)); box-shadow: inset 0 1px 0 rgba(255,255,255,.96), inset 0 -1px 0 rgba(162,142,111,.13), 0 18px 38px rgba(79,64,44,.18); backdrop-filter: blur(32px) saturate(150%) contrast(1.04); -webkit-backdrop-filter: blur(32px) saturate(150%) contrast(1.04); opacity: 0; pointer-events: none; transform: translateY(-7px) scale(.97); transform-origin: top center; transition: opacity .2s ease, transform .24s cubic-bezier(.2,.8,.2,1); }
+.new-order-page .glass-select.is-open .glass-select-menu { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+.new-order-page .glass-select-menu button { padding: 13px 12px; border: 0; border-radius: 10px; color: #273246; background: rgba(255,255,255,.2); cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; letter-spacing: .01em; text-align: left; transition: transform .18s ease, background .18s ease, color .18s ease; }
+.new-order-page .glass-select-menu button + button { border-top: 1px solid rgba(116,130,156,.18); }
+.new-order-page .glass-select-menu button:hover, .new-order-page .glass-select-menu button.is-selected { color: #164fd3; background: linear-gradient(105deg, rgba(72,119,242,.16), rgba(187,208,255,.28)); transform: translateX(3px); }
+@media (prefers-reduced-transparency: reduce) { .new-order-page .order-section, .new-order-page .service-details { background: rgba(255,255,255,.96); backdrop-filter: none; -webkit-backdrop-filter: none; } .new-order-page .field input, .new-order-page .field select, .new-order-page .field textarea { background: #fff; } }

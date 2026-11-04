@@ -1,0 +1,30 @@
+.login-card .input-hint {
+  display: block;
+  margin-top: 7px;
+  color: #8993a5;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.login-card label:has(.input-hint) { margin-top: 22px; }
+.login-card label:has(.input-hint) + label { margin-top: 21px; }
+.login-card label:has(.input-hint) ~ button { margin-top: 29px; }
+
+.login-card label.has-error { color: #d93737; }
+.login-card label.has-error .input-hint { color: #d93737; }
+.login-card label div.field-error {
+  outline: 2px solid #e5484d;
+  box-shadow: 0 0 0 4px rgba(229, 72, 77, .12);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .login-card label div.field-shake { animation: invalid-field-shake .42s cubic-bezier(.36,.07,.19,.97); }
+}
+
+@keyframes invalid-field-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-7px); }
+  40%, 80% { transform: translateX(7px); }
+}

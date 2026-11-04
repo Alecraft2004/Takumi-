@@ -1,0 +1,2 @@
+.login-card .login-error { margin: 14px 0 -8px; color: #c73535; font-size: 12px; line-height: 1.3; }
+.login-card > button:disabled { cursor: wait; opacity: .72; transform: none; }

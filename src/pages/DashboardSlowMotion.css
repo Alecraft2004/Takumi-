@@ -1,0 +1,98 @@
+.dashboard-item { animation-duration: 1.15s; }
+.dashboard-donut { animation-duration: 1.65s; animation-delay: 1s; }
+.compact-order.interactive-order { animation-duration: .8s; }
+.dashboard-view.is-refreshing .dashboard-donut { animation-duration: 1.45s; }
+
+/* El dashboard usa el ancho real disponible, sin el límite global de otras páginas. */
+.page-content:has(.dashboard-view) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: clamp(36px, 4vw, 68px) clamp(28px, 5.5vw, 104px) 48px;
+}
+
+.dashboard-view {
+  width: 100%;
+  min-height: calc(100dvh - 100px);
+}
+
+.dashboard-view .metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 1.6vw, 28px);
+}
+
+.dashboard-view .metric { min-height: clamp(120px, 11vw, 156px); }
+.dashboard-view .dashboard-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(300px, 1fr) minmax(150px, auto);
+  gap: clamp(18px, 1.8vw, 30px);
+}
+.dashboard-view .chart-card, .dashboard-view .recent-card { min-height: 0; }
+.dashboard-view .notice-card { min-height: 150px; align-items: center; }
+
+@media (min-width: 1500px) {
+  .dashboard-view .metrics { gap: 30px; }
+  .dashboard-view .metric { padding: 23px 22px; }
+  .dashboard-view .metric strong { font-size: 34px; }
+  .dashboard-view .chart-card, .dashboard-view .recent-card { padding: 26px 28px; }
+}
+
+@media (max-width: 1050px) {
+  .dashboard-view .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-view .dashboard-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+}
+
+@media (max-width: 600px) {
+  .page-content:has(.dashboard-view) { padding: 32px 18px; }
+  .dashboard-view .metrics { grid-template-columns: 1fr; }
+  .dashboard-view .notice-card { min-height: 120px; }
+}
+
+/* Interacción espacial: el tablero responde al recorrido del cursor como un panel técnico. */
+.dashboard-view { --pointer-x: 0; --pointer-y: 0; }
+.dashboard-view .metric-action:hover, .dashboard-view .notice-action:hover {
+  filter: none;
+  box-shadow: none;
+}
+.dashboard-view.pointer-active .dashboard-item {
+  transition: transform .18s cubic-bezier(.2,.85,.28,1), box-shadow .22s ease;
+  transform: perspective(1200px) rotateX(calc(var(--pointer-y) * -3deg)) rotateY(calc(var(--pointer-x) * 3deg));
+}
+.dashboard-view.pointer-active .metric-action:nth-child(2), .dashboard-view.pointer-active .notice-card:nth-child(2n) {
+  transform: perspective(1200px) rotateX(calc(var(--pointer-y) * 2deg)) rotateY(calc(var(--pointer-x) * -2deg));
+}
+.dashboard-view.pointer-active .metric-action:nth-child(3) { transform: perspective(1200px) rotateX(calc(var(--pointer-y) * -2deg)) rotateY(calc(var(--pointer-x) * 2deg)); }
+.dashboard-view.pointer-active .metric-action:nth-child(4) { transform: perspective(1200px) rotateX(calc(var(--pointer-y) * 3deg)) rotateY(calc(var(--pointer-x) * -3deg)); }
+.dashboard-view .metric-action, .dashboard-view .chart-card, .dashboard-view .recent-card, .dashboard-view .notice-card { overflow: hidden; transform-style: preserve-3d; }
+.dashboard-view .metric-action::before, .dashboard-view .chart-card::before, .dashboard-view .recent-card::before { display: none; }
+.dashboard-view .metric-action::before, .dashboard-view .chart-card::before, .dashboard-view .recent-card::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  width: 130%;
+  height: 130%;
+  inset: -15%;
+  pointer-events: none;
+  opacity: .18;
+  background: repeating-linear-gradient(135deg, transparent 0 15px, currentColor 16px 17px, transparent 18px 34px);
+  transform: translate(calc(var(--pointer-x) * -18px), calc(var(--pointer-y) * -18px));
+  transition: transform .2s ease;
+}
+.dashboard-view .metric-action > *, .dashboard-view .chart-card > *, .dashboard-view .recent-card > * { position: relative; z-index: 1; }
+.dashboard-view.pointer-active .dashboard-donut { transform: translate(calc(var(--pointer-x) * 13px), calc(var(--pointer-y) * 13px)) rotate(calc(var(--pointer-x) * 8deg)); }
+.dashboard-view.pointer-active .legend { transform: translate(calc(var(--pointer-x) * -8px), calc(var(--pointer-y) * -8px)); }
+.dashboard-view .dashboard-donut, .dashboard-view .legend { transition: transform .24s cubic-bezier(.2,.85,.28,1); }
+.dashboard-view.pointer-active .notice-icon { transform: translate(calc(var(--pointer-x) * 9px), calc(var(--pointer-y) * 9px)) rotate(calc(var(--pointer-x) * 10deg)); }
+.dashboard-view .notice-icon { transition: transform .22s cubic-bezier(.2,.85,.28,1); }
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-view.pointer-active .dashboard-item, .dashboard-view.pointer-active .dashboard-donut, .dashboard-view.pointer-active .legend, .dashboard-view.pointer-active .notice-icon { transform: none; transition: none; }
+}
+
+/* Sin textura superpuesta: las tarjetas mantienen solo el parallax. */
+.dashboard-view .metric-action::before,
+.dashboard-view .chart-card::before,
+.dashboard-view .recent-card::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}

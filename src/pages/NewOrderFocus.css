@@ -1,0 +1,6 @@
+.new-order-page .field { position: relative; transform-origin: left center; transition: transform .24s cubic-bezier(.16,1,.3,1), filter .24s ease; }
+.new-order-page .field:focus-within { z-index: 3; transform: scale(1.065); filter: drop-shadow(0 16px 24px rgba(29,54,108,.22)); }
+.new-order-page .field:focus-within > span { color: #1748c7; font-weight: 700; }
+.new-order-page .field:focus-within input, .new-order-page .field:focus-within select, .new-order-page .field:focus-within textarea { border-color: #1748c7; box-shadow: 0 0 0 4px rgba(36,89,221,.18), 0 12px 22px rgba(36,89,221,.12); font-size: 15px; }
+.new-order-page .field input, .new-order-page .field select, .new-order-page .field textarea { transition: border-color .2s ease, box-shadow .2s ease, font-size .24s cubic-bezier(.16,1,.3,1); }
+@media (prefers-reduced-motion: reduce) { .new-order-page .field, .new-order-page .field input, .new-order-page .field select, .new-order-page .field textarea { transition: none; } .new-order-page .field:focus-within { transform: none; } }

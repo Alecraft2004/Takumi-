@@ -1,0 +1,9 @@
+:root {
+  --color-ink: #111827;
+  --color-surface: #f7f1e9;
+  --color-primary: #2055d6;
+  --color-sidebar: #080f1a;
+  --radius-card: 15px;
+  --shadow-card: 0 10px 25px rgba(65, 50, 36, .075);
+  --space-page: clamp(30px, 5.5vw, 104px);
+}

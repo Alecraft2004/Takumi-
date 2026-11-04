@@ -1,0 +1,4 @@
+.new-order-page .customer-fields { grid-template-columns: 1fr; gap: 16px; }
+.new-order-page .customer-fields .field:last-child { grid-column: auto; }
+.new-order-page .order-section:first-child .section-fields { gap: 18px; }
+.new-order-page .field input::placeholder, .new-order-page .field textarea::placeholder { color: #9aa5b5; opacity: 1; }
