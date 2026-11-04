@@ -109,3 +109,4 @@
 @keyframes client-detail-in { from { opacity: 0; transform: translateY(13px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @media (max-width: 540px) { .clients-page .client-search { width: 100%; } .client-form-grid { grid-template-columns: 1fr; } .form-field-wide { grid-column: auto; } .detail-grid { grid-template-columns: 1fr; } .detail-grid .vehicle-table-card, .detail-grid .detail-orders { grid-column: auto; } }
 @media (prefers-reduced-motion: reduce) { .client-form-grid label, .client-form-grid input { transition: none; } .client-form-grid label:focus-within { transform: none; } }
+.detail-actions .detail-edit{color:#fff;border-color:rgba(24,67,180,.88);text-shadow:0 1px 1px rgba(8,27,82,.35)}

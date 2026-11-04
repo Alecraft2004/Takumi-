@@ -8,6 +8,7 @@ import RepairStatusPage from './pages/RepairStatusPage'
 import OrdersPage from './pages/OrdersPage'
 import ClientsPage from './pages/ClientsPage'
 import SettingsPage from './pages/SettingsPage'
+import { recentOrders } from './data/mockData'
 import './index.css'
 import './layout.css'
 import './design/tokens.css'
@@ -15,6 +16,8 @@ import './design/tokens.css'
 const pages = { dashboard: DashboardPage, newOrder: NewOrderPage, diagnosis: DiagnosisPage, status: RepairStatusPage, orders: OrdersPage, clients: ClientsPage, settings: SettingsPage }
 const paths = { dashboard: '/dashboard', newOrder: '/nueva-orden', diagnosis: '/diagnostico', status: '/estado-reparacion', orders: '/ordenes', clients: '/clientes', settings: '/configuracion' }
 const pageFromPath = () => Object.entries(paths).find(([, path]) => path === window.location.pathname)?.[0] || 'dashboard'
+const ORDERS_STORAGE_KEY = 'takumi-demo-orders'
+const loadOrders = () => { try { const saved = JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY)); return Array.isArray(saved) ? saved : recentOrders } catch { return recentOrders } }
 
 function App() {
   const [user, setUser] = useState(null)
@@ -23,12 +26,15 @@ function App() {
   const [notice, setNotice] = useState('')
   const [isEntering, setIsEntering] = useState(false)
   const [theme, setTheme] = useState(() => localStorage.getItem('takumi_theme') || 'light')
+  const [orders, setOrders] = useState(loadOrders)
   const isAuthenticated = Boolean(user)
 
   useEffect(() => {
     document.body.classList.toggle('theme-dark', theme === 'dark')
     localStorage.setItem('takumi_theme', theme)
   }, [theme])
+
+  useEffect(() => { localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders)) }, [orders])
 
   useEffect(() => {
     let active = true
@@ -86,6 +92,8 @@ function App() {
   const accessTransition = isEntering && <div className={`access-transition ${isEntering === 'revealing' ? 'is-leaving' : ''}`} role="status" aria-label="Ingresando al sistema"><div className="garage-shutter garage-shutter--left" /><div className="garage-shutter garage-shutter--right" /><div className="access-transition__content"><div className="ignition-gauge"><span>GO</span></div><b>TAKUMI</b><span>Encendiendo el control de tu taller</span><i /></div></div>
   if (!isAuthenticated) return <><LoginPage onLogin={login} />{accessTransition}</>
   const Page = pages[page]
-  return <><div className={isEntering ? 'dashboard-enter' : ''}><AppLayout activePage={page} onNavigate={navigate} onLogout={logout} theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>{notice && <div className="toast" role="status">{notice}</div>}<Page onNavigate={navigate} onNotify={showNotice} /></AppLayout></div>{accessTransition}</>
+  const updateOrderStatus = (orderId, status) => setOrders((current) => current.map((order) => order.id === orderId ? { ...order, status } : order))
+  const updateOrder = (orderId, updates) => setOrders((current) => current.map((order) => order.id === orderId ? { ...order, ...updates } : order))
+  return <><div className={isEntering ? 'dashboard-enter' : ''}><AppLayout activePage={page} onNavigate={navigate} onLogout={logout} theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>{notice && <div className="toast" role="status">{notice}</div>}<Page onNavigate={navigate} onNotify={showNotice} orders={orders} onUpdateOrderStatus={updateOrderStatus} onUpdateOrder={updateOrder} /></AppLayout></div>{accessTransition}</>
 }
 export default App
