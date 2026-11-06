@@ -110,3 +110,23 @@
 @media (max-width: 540px) { .clients-page .client-search { width: 100%; } .client-form-grid { grid-template-columns: 1fr; } .form-field-wide { grid-column: auto; } .detail-grid { grid-template-columns: 1fr; } .detail-grid .vehicle-table-card, .detail-grid .detail-orders { grid-column: auto; } }
 @media (prefers-reduced-motion: reduce) { .client-form-grid label, .client-form-grid input { transition: none; } .client-form-grid label:focus-within { transform: none; } }
 .detail-actions .detail-edit{color:#fff;border-color:rgba(24,67,180,.88);text-shadow:0 1px 1px rgba(8,27,82,.35)}
+.client-form-actions .form-save:disabled{opacity:.58;cursor:not-allowed;transform:none!important}
+/* El detalle del cliente conserva el material glass sin perder lectura en dark mode. */
+body.theme-dark .client-detail-dialog,body.theme-dark .client-form-dialog{border-color:rgba(201,218,246,.28);background:linear-gradient(135deg,rgba(43,56,80,.96),rgba(24,33,49,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 30px 72px rgba(0,0,0,.52)}body.theme-dark .client-detail-dialog::before,body.theme-dark .client-form-dialog::before{background:rgba(83,124,237,.20)}body.theme-dark .client-detail-dialog h2,body.theme-dark .client-form-heading h2{color:#f2f6ff}body.theme-dark .detail-kicker{color:#b4cbff}body.theme-dark .detail-document,body.theme-dark .client-form-heading p,body.theme-dark .detail-card span,body.theme-dark .detail-card small,body.theme-dark .client-form-grid label span{color:#b6c4da}body.theme-dark .detail-card,body.theme-dark .vehicle-table-card,body.theme-dark .detail-orders{border-color:rgba(198,215,245,.20);background:rgba(67,82,108,.42)}body.theme-dark .detail-card strong,body.theme-dark .vehicle-table-card strong,body.theme-dark .vehicle-table-card td,body.theme-dark .detail-orders strong{color:#edf3ff}body.theme-dark .vehicle-table-card th{color:#b7c7e1}body.theme-dark .vehicle-table-card td{border-top-color:rgba(198,215,245,.18)}body.theme-dark .detail-close{color:#dce8fa;border-color:rgba(198,215,245,.23);background:rgba(61,76,101,.62)}body.theme-dark .client-form-grid input{color:#edf3ff;border-color:rgba(174,195,234,.31);background:rgba(10,18,30,.54)}body.theme-dark .client-form-grid input::placeholder{color:#9bacc5}body.theme-dark .form-cancel{color:#e3ebf8;border-color:rgba(198,215,245,.24);background:rgba(61,76,101,.62)}
+
+/* Las tarjetas de contacto no llevan una clase propia: se ajustan directamente en la grilla. */
+body.theme-dark .client-detail-dialog .detail-grid > div {
+  border-color: rgba(198,215,245,.24);
+  background: linear-gradient(135deg, rgba(47,62,89,.9), rgba(25,35,53,.86));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 9px 18px rgba(0,0,0,.16);
+}
+body.theme-dark .client-detail-dialog .detail-grid > div > span,
+body.theme-dark .client-detail-dialog .vehicle-table-title span,
+body.theme-dark .client-detail-dialog .vehicle-table-title small {
+  color: #c1cee3;
+}
+body.theme-dark .client-detail-dialog .detail-grid > div > strong,
+body.theme-dark .client-detail-dialog .vehicle-table-card td {
+  color: #f1f6ff;
+}
+body.theme-dark .client-detail-dialog .vehicle-more { color: #8fb5ff; }

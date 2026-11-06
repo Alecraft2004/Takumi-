@@ -33,6 +33,8 @@ function ClientFormModal({ client, onClose, onSave }) {
   const firstVehicle = client ? getVehicles(client)[0] : null
   const [form, setForm] = useState(client ? { document: client.document, name: client.name, email: client.email, phone: client.phone, channel: client.channel, plate: firstVehicle.plate === 'Sin placa registrada' ? '' : firstVehicle.plate, vehicleModel: firstVehicle.model } : emptyClient)
   const [hasError, setHasError] = useState(false)
+  const isValid = Boolean(form.document.trim() && form.name.trim())
+  const requiredHint = [!form.document.trim() && 'Documento', !form.name.trim() && 'Nombre completo'].filter(Boolean).join(' y ')
   const update = (field) => (event) => { setForm((current) => ({ ...current, [field]: event.target.value })); setHasError(false) }
   const submit = (event) => {
     event.preventDefault()
@@ -55,12 +57,12 @@ function ClientFormModal({ client, onClose, onSave }) {
         <label className="form-field-wide"><span>Vehículo</span><input value={form.vehicleModel} onChange={update('vehicleModel')} placeholder="Marca y modelo" /></label>
       </div>
       {hasError && <p className="client-form-error">Documento y nombre son obligatorios.</p>}
-      <div className="client-form-actions"><button type="button" className="form-cancel" onClick={onClose}>Cancelar</button><button type="submit" className="form-save">{client ? 'Guardar cambios' : 'Crear cliente'}</button></div>
+      <div className="client-form-actions"><Button type="button" variant="secondary" className="form-cancel" onClick={onClose}>Cancelar</Button><span className={`required-action-tip ${!isValid ? 'is-disabled' : ''}`} data-tooltip={`Completa: ${requiredHint}`}><Button type="submit" className="form-save" disabled={!isValid}>{client ? 'Guardar cambios' : 'Crear cliente'}</Button></span></div>
     </form>
   </div>
 }
 
-function ClientDetails({ client, onClose, onEdit, onToggleDisabled }) {
+function ClientDetails({ client, orderCount, onClose, onEdit, onToggleDisabled }) {
   const vehicles = getVehicles(client)
   const [isVehicleListExpanded, setIsVehicleListExpanded] = useState(false)
   const visibleVehicles = isVehicleListExpanded ? vehicles : vehicles.slice(0, 2)
@@ -75,14 +77,14 @@ function ClientDetails({ client, onClose, onEdit, onToggleDisabled }) {
         <div><IconPhone size={17} /><span>Número telefónico</span><strong>{client.phone || 'No registrado'}</strong></div>
         <div><IconPhone size={17} /><span>Medio de contacto</span><strong>{client.channel || 'No especificado'}</strong></div>
         <div className="vehicle-table-card"><div className="vehicle-table-title"><IconBike size={18} /><div><span>Vehículos registrados</span><small>{vehicles.length} {vehicles.length === 1 ? 'vehículo' : 'vehículos'}</small></div></div><div className={`vehicle-table-scroll ${isVehicleListExpanded ? 'is-expanded' : ''}`}><table><thead><tr><th>Placa</th><th>Vehículo</th></tr></thead><tbody>{visibleVehicles.map((vehicle) => <tr key={`${vehicle.plate}-${vehicle.model}`}><td>{vehicle.plate}</td><td>{vehicle.model}</td></tr>)}</tbody></table></div>{vehicles.length > 2 && <button type="button" className="vehicle-more" onClick={() => setIsVehicleListExpanded((expanded) => !expanded)}>{isVehicleListExpanded ? 'Ver menos' : 'Ver más'}<span>{isVehicleListExpanded ? '' : ` (${vehicles.length - 2} más)`}</span></button>}</div>
-        <div className="detail-orders"><span>Órdenes activas</span><strong>{client.orders}</strong></div>
+        <div className="detail-orders"><span>Órdenes activas</span><strong>{orderCount}</strong></div>
       </div>
-      <div className="detail-actions"><button type="button" className="detail-edit" onClick={() => onEdit(client)}>Editar</button><button type="button" className={client.disabled ? 'detail-reactivate' : 'detail-disable'} onClick={() => onToggleDisabled(client)}>{client.disabled ? 'Reactivar cliente' : 'Deshabilitar cliente'}</button></div>
+      <div className="detail-actions"><Button type="button" className="detail-edit" onClick={() => onEdit(client)}>Editar</Button><Button type="button" variant={client.disabled ? 'success' : 'danger'} className={client.disabled ? 'detail-reactivate' : 'detail-disable'} onClick={() => onToggleDisabled(client)}>{client.disabled ? 'Reactivar cliente' : 'Deshabilitar cliente'}</Button></div>
     </section>
   </div>
 }
 
-function ClientsPage({ onNotify }) {
+function ClientsPage({ onNotify, orders = [] }) {
   const [query, setQuery] = useState('')
   const [clientList, setClientList] = useState(loadStoredClients)
   const [selectedClient, setSelectedClient] = useState(null)
@@ -91,6 +93,19 @@ function ClientsPage({ onNotify }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState('all')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const formatOrderCount = (count) => `${count} ${count === 1 ? 'orden' : 'órdenes'}`
+  const getOrderCount = (client) => {
+    const baseCount = Number.parseInt(client.orders, 10) || 0
+    const normalizedName = client.name.trim().toLocaleLowerCase('es-PE')
+    const addedOrders = orders.filter((order) => {
+      const orderNumber = Number(String(order.id || '').replace(/\D/g, '')) || 0
+      const matchesDocument = order.clientDocument && order.clientDocument === client.document
+      const matchesLegacyCreatedOrder = orderNumber > 54 && String(order.client || '').trim().toLocaleLowerCase('es-PE') === normalizedName
+      const isActive = order.status !== 'Entregada'
+      return isActive && (matchesDocument || matchesLegacyCreatedOrder)
+    }).length
+    return baseCount + addedOrders
+  }
   const filteredClients = useMemo(() => {
     const term = query.trim().toLocaleLowerCase('es-PE')
     return clientList.filter((client) => {
@@ -121,10 +136,10 @@ function ClientsPage({ onNotify }) {
   return <section className="clients-page">
     <PageHeader title="Clientes" subtitle="Gestiona la información de tus clientes." actions={<div className="list-actions"><label className="search client-search"><IconSearch size={18} stroke={2.2} /><input value={query} onChange={(event) => { setQuery(event.target.value); setCurrentPage(1) }} placeholder="Buscar cliente" aria-label="Buscar clientes" />{query && <button type="button" className="search-clear" aria-label="Limpiar búsqueda" onClick={() => { setQuery(''); setCurrentPage(1) }}><IconX size={15} /></button>}</label><div className="client-filter"><Button variant="secondary" className={statusFilter !== 'all' ? 'is-filtered' : ''} onClick={() => setIsFilterOpen((open) => !open)} aria-expanded={isFilterOpen}><IconFilter size={16} /> Filtros</Button>{isFilterOpen && <div className="client-filter-menu" role="menu" aria-label="Filtrar clientes"><span>Estado del cliente</span>{[['all', 'Todos'], ['active', 'Activos'], ['inactive', 'Inactivos']].map(([value, label]) => <button type="button" className={statusFilter === value ? 'selected' : ''} key={value} onClick={() => { setStatusFilter(value); setCurrentPage(1); setIsFilterOpen(false) }}><i />{label}</button>)}</div>}</div><Button onClick={() => setIsCreating(true)}>Agregar cliente</Button></div>} />
     <Card className="table-card">
-      <div className="table-wrap"><table className="data-table clients-table"><thead><tr><th>Documento</th><th>Cliente</th><th>Estado</th><th>Órdenes activas</th><th>Acciones</th></tr></thead><tbody>{filteredClients.length ? visibleClients.map((client) => <tr className={client.disabled ? 'is-disabled' : ''} key={client.document}><td>{client.document}</td><td><b>{client.name}</b></td><td><span className={`client-status ${client.disabled ? 'inactive' : 'active'}`}><i />{client.disabled ? 'Inactivo' : 'Activo'}</span></td><td>{client.orders}</td><td><Button onClick={() => setSelectedClient(client)}>Ver</Button></td></tr>) : <tr className="empty-search"><td colSpan="5"><div className="empty-search-content"><IconSearch size={20} /><strong>No encontramos clientes</strong><span>Prueba con otro nombre, documento, teléfono o vehículo.</span></div></td></tr>}</tbody></table></div>
+      <div className="table-wrap"><table className="data-table clients-table"><thead><tr><th>Documento</th><th>Cliente</th><th>Estado</th><th>Órdenes activas</th><th>Acciones</th></tr></thead><tbody>{filteredClients.length ? visibleClients.map((client) => <tr className={client.disabled ? 'is-disabled' : ''} key={client.document}><td>{client.document}</td><td><b>{client.name}</b></td><td><span className={`client-status ${client.disabled ? 'inactive' : 'active'}`}><i />{client.disabled ? 'Inactivo' : 'Activo'}</span></td><td>{formatOrderCount(getOrderCount(client))}</td><td><Button onClick={() => setSelectedClient(client)}>Ver</Button></td></tr>) : <tr className="empty-search"><td colSpan="5"><div className="empty-search-content"><IconSearch size={20} /><strong>No encontramos clientes</strong><span>Prueba con otro nombre, documento, teléfono o vehículo.</span></div></td></tr>}</tbody></table></div>
       <div className="pagination clients-pagination"><Button variant="secondary" disabled={currentPage === 1} onClick={() => setCurrentPage((page) => page - 1)}>Anterior</Button>{Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => <button type="button" className={`page-number ${currentPage === page ? 'active' : ''}`} key={page} onClick={() => setCurrentPage(page)}>{page}</button>)}<Button variant="secondary" disabled={currentPage === pageCount} onClick={() => setCurrentPage((page) => page + 1)}>Siguiente</Button></div>
     </Card>
-    {selectedClient && <ClientDetails client={selectedClient} onClose={() => setSelectedClient(null)} onEdit={startEdit} onToggleDisabled={toggleDisabled} />}
+    {selectedClient && <ClientDetails client={selectedClient} orderCount={formatOrderCount(getOrderCount(selectedClient))} onClose={() => setSelectedClient(null)} onEdit={startEdit} onToggleDisabled={toggleDisabled} />}
     {(isCreating || formClient) && <ClientFormModal client={formClient} onClose={() => { setFormClient(null); setIsCreating(false) }} onSave={saveClient} />}
   </section>
 }

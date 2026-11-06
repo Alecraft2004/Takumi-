@@ -1,0 +1,92 @@
+.login-sidebar {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-wall {
+  position: absolute;
+  top: 146px;
+  right: 14px;
+  bottom: 18px;
+  left: 29px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-wall > small {
+  display: block;
+  margin: 0 0 12px;
+  color: #71819a;
+  font-family: 'Space Grotesk', Arial, sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.brand-columns {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding-block: 4px;
+  /* Las columnas se disuelven al entrar y salir, sin recortar bruscamente los logos. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 9%, #000 89%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 9%, #000 89%, transparent 100%);
+}
+
+.brand-column {
+  overflow: hidden;
+  contain: paint;
+}
+
+.brand-track {
+  display: grid;
+  gap: 7px;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  animation: brand-rise 17s linear infinite;
+}
+
+.brand-column.is-reverse .brand-track {
+  animation-direction: reverse;
+  animation-duration: 20s;
+}
+
+.brand-chip {
+  display: grid;
+  place-items: center;
+  min-height: 42px;
+  padding: 5px 3px;
+}
+
+.brand-chip img {
+  display: block;
+  width: 100%;
+  max-width: 66px;
+  height: 32px;
+  object-fit: contain;
+  filter: grayscale(1) brightness(0) invert(1);
+  opacity: .88;
+}
+
+.brand-chip img.brand-logo-original {
+  filter: none;
+  opacity: 1;
+}
+
+@keyframes brand-rise {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, calc(-50% - 3.5px), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-track { animation: none; }
+}
+
+@media (max-width: 760px) {
+  .brand-wall { display: none; }
+}

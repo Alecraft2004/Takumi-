@@ -1,0 +1,94 @@
+.login-intro .brand-manifesto {
+  position: relative;
+  isolation: isolate;
+  cursor: default;
+}
+
+.brand-manifesto span {
+  display: block;
+  width: fit-content;
+  transform-origin: 6% 72%;
+  transition: transform .56s cubic-bezier(.16, 1, .3, 1), letter-spacing .56s cubic-bezier(.16, 1, .3, 1), filter .4s ease;
+  animation: manifesto-letterpress 14s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.brand-manifesto span:nth-child(2) { animation-delay: .16s; }
+.brand-manifesto span:nth-child(3) { animation-delay: .32s; }
+
+.brand-manifesto::before {
+  position: absolute;
+  z-index: -1;
+  top: 16%;
+  left: -14px;
+  width: 12px;
+  height: 64%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, rgba(255, 107, 89, .72), transparent);
+  box-shadow: 0 0 22px rgba(255, 107, 89, .24);
+  content: '';
+  opacity: 0;
+  transform: translateX(-10px) scaleY(.3);
+  animation: manifesto-cursor 14s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+
+.brand-manifesto::after {
+  position: absolute;
+  z-index: 2;
+  inset: -10px -22px;
+  pointer-events: none;
+  background: linear-gradient(108deg, transparent 42%, rgba(255, 255, 255, 0) 46%, rgba(255, 107, 89, .26) 50%, rgba(255, 255, 255, 0) 54%, transparent 58%);
+  content: '';
+  opacity: 0;
+  transform: translateX(-108%) skewX(-16deg);
+  animation: manifesto-sweep 14s cubic-bezier(.65, 0, .35, 1) infinite;
+}
+
+@keyframes manifesto-letterpress {
+  0%, 68%, 100% { transform: translate3d(0, 0, 0) rotate(0); letter-spacing: .5px; filter: none; }
+  73% { transform: translate3d(8px, -3px, 0) rotate(-.55deg); letter-spacing: 1.8px; filter: drop-shadow(4px 6px 0 rgba(255, 107, 89, .15)); }
+  78% { transform: translate3d(-2px, 1px, 0) rotate(.18deg); letter-spacing: .85px; }
+  83% { transform: translate3d(0, 0, 0) rotate(0); letter-spacing: .5px; filter: none; }
+}
+
+@keyframes manifesto-cursor {
+  0%, 67%, 86%, 100% { opacity: 0; transform: translateX(-10px) scaleY(.3); }
+  70% { opacity: .7; transform: translateX(0) scaleY(1); }
+  80% { opacity: 0; transform: translateX(320px) scaleY(.72); }
+}
+
+@keyframes manifesto-sweep {
+  0%, 69%, 84%, 100% { opacity: 0; transform: translateX(-108%) skewX(-16deg); }
+  72%, 81% { opacity: 1; }
+  82% { opacity: 0; transform: translateX(108%) skewX(-16deg); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Misma firma visual que el ciclo automático, pero condensada al hover. */
+  .login-intro .brand-manifesto:hover span { animation: manifesto-hover-letterpress 1.45s cubic-bezier(.16, 1, .3, 1) both; }
+  .login-intro .brand-manifesto:hover span:nth-child(2) { animation-delay: .09s; }
+  .login-intro .brand-manifesto:hover span:nth-child(3) { animation-delay: .18s; }
+  .login-intro .brand-manifesto:hover::before { animation: manifesto-hover-cursor 1.5s cubic-bezier(.65, 0, .35, 1) both; }
+  .login-intro .brand-manifesto:hover::after { animation: manifesto-hover-sweep 1.5s cubic-bezier(.65, 0, .35, 1) both; }
+}
+
+@keyframes manifesto-hover-letterpress {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0); letter-spacing: .5px; filter: none; }
+  44% { transform: translate3d(8px, -3px, 0) rotate(-.55deg); letter-spacing: 1.8px; filter: drop-shadow(4px 6px 0 rgba(255, 107, 89, .15)); }
+  70% { transform: translate3d(-2px, 1px, 0) rotate(.18deg); letter-spacing: .85px; }
+}
+
+@keyframes manifesto-hover-cursor {
+  0%, 12%, 92%, 100% { opacity: 0; transform: translateX(-10px) scaleY(.3); }
+  20% { opacity: .7; transform: translateX(0) scaleY(1); }
+  82% { opacity: 0; transform: translateX(320px) scaleY(.72); }
+}
+
+@keyframes manifesto-hover-sweep {
+  0%, 16%, 89%, 100% { opacity: 0; transform: translateX(-108%) skewX(-16deg); }
+  24%, 79% { opacity: 1; }
+  86% { opacity: 0; transform: translateX(108%) skewX(-16deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-manifesto span, .brand-manifesto::before, .brand-manifesto::after { animation: none; }
+}

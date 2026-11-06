@@ -18,6 +18,11 @@ const paths = { dashboard: '/dashboard', newOrder: '/nueva-orden', diagnosis: '/
 const pageFromPath = () => Object.entries(paths).find(([, path]) => path === window.location.pathname)?.[0] || 'dashboard'
 const ORDERS_STORAGE_KEY = 'takumi-demo-orders'
 const loadOrders = () => { try { const saved = JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY)); return Array.isArray(saved) ? saved : recentOrders } catch { return recentOrders } }
+const initialActivities = [
+  { id: 'activity-1', type: 'status', title: 'Orden actualizada', detail: 'ORD-0054 pasó a En reparación.', time: 'Hace 8 min' },
+  { id: 'activity-2', type: 'diagnosis', title: 'Diagnóstico guardado', detail: 'Se registraron hallazgos en ORD-0053.', time: 'Hace 26 min' },
+  { id: 'activity-3', type: 'client', title: 'Cliente actualizado', detail: 'Se modificó la ficha de María López.', time: 'Hoy, 09:42' },
+]
 
 function App() {
   const [user, setUser] = useState(null)
@@ -27,10 +32,12 @@ function App() {
   const [isEntering, setIsEntering] = useState(false)
   const [theme, setTheme] = useState(() => localStorage.getItem('takumi_theme') || 'light')
   const [orders, setOrders] = useState(loadOrders)
+  const [activities, setActivities] = useState(initialActivities)
   const isAuthenticated = Boolean(user)
 
   useEffect(() => {
     document.body.classList.toggle('theme-dark', theme === 'dark')
+    document.documentElement.classList.toggle('theme-dark', theme === 'dark')
     localStorage.setItem('takumi_theme', theme)
   }, [theme])
 
@@ -71,6 +78,9 @@ function App() {
     setNotice('')
   }
   const showNotice = (message) => { setNotice(message); window.setTimeout(() => setNotice(''), 3000) }
+  const addActivity = (title, detail, type = 'status') => {
+    setActivities((current) => [{ id: `${Date.now()}-${Math.random()}`, type, title, detail, time: 'Ahora' }, ...current].slice(0, 8))
+  }
   const login = (authenticatedUser) => {
     setIsEntering('covering')
     window.setTimeout(() => {
@@ -92,8 +102,18 @@ function App() {
   const accessTransition = isEntering && <div className={`access-transition ${isEntering === 'revealing' ? 'is-leaving' : ''}`} role="status" aria-label="Ingresando al sistema"><div className="garage-shutter garage-shutter--left" /><div className="garage-shutter garage-shutter--right" /><div className="access-transition__content"><div className="ignition-gauge"><span>GO</span></div><b>TAKUMI</b><span>Encendiendo el control de tu taller</span><i /></div></div>
   if (!isAuthenticated) return <><LoginPage onLogin={login} />{accessTransition}</>
   const Page = pages[page]
-  const updateOrderStatus = (orderId, status) => setOrders((current) => current.map((order) => order.id === orderId ? { ...order, status } : order))
-  const updateOrder = (orderId, updates) => setOrders((current) => current.map((order) => order.id === orderId ? { ...order, ...updates } : order))
-  return <><div className={isEntering ? 'dashboard-enter' : ''}><AppLayout activePage={page} onNavigate={navigate} onLogout={logout} theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>{notice && <div className="toast" role="status">{notice}</div>}<Page onNavigate={navigate} onNotify={showNotice} orders={orders} onUpdateOrderStatus={updateOrderStatus} onUpdateOrder={updateOrder} /></AppLayout></div>{accessTransition}</>
+  const updateOrderStatus = (orderId, status) => {
+    setOrders((current) => current.map((order) => order.id === orderId ? { ...order, status } : order))
+    addActivity('Estado de orden actualizado', `${orderId} ahora está ${status}.`)
+  }
+  const updateOrder = (orderId, updates) => {
+    setOrders((current) => current.map((order) => order.id === orderId ? { ...order, ...updates } : order))
+    addActivity('Información de orden actualizada', `Se guardaron cambios en ${orderId}.`, 'diagnosis')
+  }
+  const createOrder = (order) => {
+    setOrders((current) => [order, ...current])
+    addActivity('Nueva orden registrada', `${order.id} fue creada para ${order.client}.`, 'order')
+  }
+  return <><div className={isEntering ? 'dashboard-enter' : ''}><AppLayout activePage={page} onNavigate={navigate} onLogout={logout} theme={theme} onToggleTheme={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} activities={activities}>{notice && <div className="toast" role="status">{notice}</div>}<Page onNavigate={navigate} onNotify={showNotice} orders={orders} onCreateOrder={createOrder} onUpdateOrderStatus={updateOrderStatus} onUpdateOrder={updateOrder} /></AppLayout></div>{accessTransition}</>
 }
 export default App
